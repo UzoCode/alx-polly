@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/botton";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/app/components/ui/card";
 import { deletePoll } from "@/app/lib/actions/poll-actions";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/app/lib/context/auth-context"; // ✅ Reuse auth context
 
 interface Poll {
   id: string;
@@ -21,41 +22,75 @@ interface Poll {
 }
 
 export default function AdminPage() {
+  const { user } = useAuth(); // ✅ Access current user
   const [polls, setPolls] = useState<Poll[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!user) {
+      setError("Unauthorized: You must be logged in to view this page.");
+      setLoading(false);
+      return;
+    }
     fetchAllPolls();
-  }, []);
+  }, [user]);
 
   const fetchAllPolls = async () => {
-    const supabase = createClient();
+    try {
+      const supabase = createClient();
 
-    const { data, error } = await supabase
-      .from("polls")
-      .select("*")
-      .order("created_at", { ascending: false });
+      // ✅ Restrict access to admin role
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user?.id)
+        .single();
 
-    if (!error && data) {
-      setPolls(data);
+      if (profile?.role !== "admin") {
+        setError("Access denied: Admins only.");
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("polls")
+        .select("id, question, user_id, created_at, options")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setPolls(data ?? []);
+    } catch (err: any) {
+      console.error("Error fetching polls:", err);
+      setError("Failed to load polls. Please try again later.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleDelete = async (pollId: string) => {
-    setDeleteLoading(pollId);
-    const result = await deletePoll(pollId);
+    try {
+      setDeleteLoading(pollId);
+      const result = await deletePoll(pollId);
 
-    if (!result.error) {
-      setPolls(polls.filter((poll) => poll.id !== pollId));
+      if (result.error) throw result.error;
+
+      setPolls((prev) => prev.filter((poll) => poll.id !== pollId));
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      setError("Failed to delete poll.");
+    } finally {
+      setDeleteLoading(null);
     }
-
-    setDeleteLoading(null);
   };
 
   if (loading) {
     return <div className="p-6">Loading all polls...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-red-600">{error}</div>;
   }
 
   return (
@@ -80,12 +115,6 @@ export default function AdminPage() {
                         Poll ID:{" "}
                         <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">
                           {poll.id}
-                        </code>
-                      </div>
-                      <div>
-                        Owner ID:{" "}
-                        <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">
-                          {poll.user_id}
                         </code>
                       </div>
                       <div>
