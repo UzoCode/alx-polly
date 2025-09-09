@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Poll } from '@/app/lib/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Poll } from '@/app/lib/types/';
 
 interface PollCardProps {
   poll: {
@@ -32,9 +32,9 @@ export function PollCard({ poll }: PollCardProps) {
             <p>{totalVotes} total votes</p>
           </div>
         </CardContent>
-        <CardFooter className="text-xs text-slate-400">
+        <div className="p-4 border-t text-xs text-slate-400">
           Created on {formattedDate}
-        </CardFooter>
+        </div>
       </Card>
     </Link>
   );
