@@ -94,3 +94,18 @@ npm run dev
 The application will be available at `http://localhost:3000`.
 
 Good luck, engineer! This is your chance to step into the shoes of a security professional and make a real impact on the quality and safety of this application. Happy hunting!
+
+## Progress with the use of Gemini CLI
+Used the CLI to explain the app/components/ui/poll-card.tsx file
+###
+cat poll-card.tsx | gemini -p "Explain this code in simple terms"
+This is a React component called `PollCard` that displays a summary of a single poll.
+
+In simple terms, it does the following:
+
+1.  **Receives Data:** It takes a `poll` object as input, which contains details like the poll's title, description, options, and creation date.
+2.  **Calculates Total Votes:** It figures out the total number of votes cast in the poll.
+3.  **Formats the Date:** It takes the creation date and formats it into a more readable format (e.g., "9/9/2025").
+4.  **Renders a Card:** It displays the poll's information inside a UI card. This card shows the title, description, number of options, total votes, and when it was created.
+5.  **Makes it Clickable:** The entire card is a link. Clicking on it will take you to a detailed page for that specific poll (e.g., `/polls/123`). When you hover over the card, it shows a slight shadow and the title turns blue to let you know it's interactive.
+###
