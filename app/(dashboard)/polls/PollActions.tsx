@@ -2,15 +2,9 @@
 
 import Link from "next/link";
 import { useAuth } from "@/app/lib/context/auth-context";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/botton";
 import { deletePoll } from "@/app/lib/actions/poll-actions";
-
-interface Poll {
-  id: string;
-  question: string;
-  options: any[];
-  user_id: string;
-}
+import { Poll } from "@/app/lib/types/poll"; // ✅ shared Poll type
 
 interface PollActionsProps {
   poll: Poll;
@@ -18,6 +12,7 @@ interface PollActionsProps {
 
 export default function PollActions({ poll }: PollActionsProps) {
   const { user } = useAuth();
+
   const handleDelete = async () => {
     if (confirm("Are you sure you want to delete this poll?")) {
       await deletePoll(poll.id);
@@ -30,15 +25,14 @@ export default function PollActions({ poll }: PollActionsProps) {
       <Link href={`/polls/${poll.id}`}>
         <div className="group p-4">
           <div className="h-full">
-            <div>
-              <h2 className="group-hover:text-blue-600 transition-colors font-bold text-lg">
-                {poll.question}
-              </h2>
-              <p className="text-slate-500">{poll.options.length} options</p>
-            </div>
+            <h2 className="group-hover:text-blue-600 transition-colors font-bold text-lg">
+              {poll.question}
+            </h2>
+            <p className="text-slate-500">{poll.options.length} options</p>
           </div>
         </div>
       </Link>
+
       {user && user.id === poll.user_id && (
         <div className="flex gap-2 p-2">
           <Button asChild variant="outline" size="sm">
