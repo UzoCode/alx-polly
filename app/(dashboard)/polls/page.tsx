@@ -1,7 +1,8 @@
-import Link from 'next/link';
-import { Button } from '@/app/components/ui/botton';
-import { getUserPolls } from '@/app/lib/actions/poll-actions';
-import PollActions from './PollActions'; 
+import Link from "next/link";
+import { Button } from "@/app/components/ui/botton";
+import { getUserPolls } from "@/app/lib/actions/poll-actions";
+import PollActions from "./PollActions";
+import { Poll } from "@/app/lib/types/poll"; // ✅ shared Poll type
 
 export default async function PollsPage() {
   const { polls, error } = await getUserPolls();
@@ -14,19 +15,25 @@ export default async function PollsPage() {
           <Link href="/create">Create New Poll</Link>
         </Button>
       </div>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {polls && polls.length > 0 ? (
-          polls.map((poll) => <PollActions key={poll.id} poll={poll} />)
+          polls.map((poll: Poll) => (
+            <PollActions key={poll.id} poll={poll} />
+          ))
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center col-span-full">
             <h2 className="text-xl font-semibold mb-2">No polls yet</h2>
-            <p className="text-slate-500 mb-6">Create your first poll to get started</p>
+            <p className="text-slate-500 mb-6">
+              Create your first poll to get started
+            </p>
             <Button asChild>
               <Link href="/create">Create New Poll</Link>
             </Button>
           </div>
         )}
       </div>
+
       {error && <div className="text-red-500">{error}</div>}
     </div>
   );
