@@ -160,7 +160,7 @@ export async function submitVote(pollIdRaw: string, optionIndexRaw: number) {
   // Attempt upsert (update if exists, insert otherwise). This requires DB unique constraint.
   const { error } = await supabase
     .from("votes")
-    .upsert(payload, { onConflict: ["poll_id", "user_id"] })
+    .upsert([payload], { onConflict: "poll_id,user_id"})
     .select();
 
   if (error) {
@@ -171,6 +171,40 @@ export async function submitVote(pollIdRaw: string, optionIndexRaw: number) {
   // Optionally revalidate poll page to update results
   revalidatePath(`/polls/${pollId}`);
   return { error: null };
+}
+
+/* ---------- CAST A VOTE ---------- */
+export async function castVote(
+  poll_id: string,
+  user_id: string,
+  option_index: number
+) {
+  if (!poll_id || !user_id) {
+    return { success: false, error: "Missing poll_id or user_id" };
+  }
+
+  const supabase = await createClient();
+
+  const payload = [
+    {
+      poll_id,
+      user_id,
+      option_index,
+      created_at: new Date().toISOString(),
+    },
+  ];
+
+  const { data, error } = await supabase
+    .from("votes")
+    .upsert(payload, { onConflict: "poll_id,user_id" }) // ✅ Correct syntax
+    .select();
+
+  if (error) {
+    console.error("Vote upsert failed:", error.message);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data };
 }
 
 /* ---------- DELETE POLL ---------- */
