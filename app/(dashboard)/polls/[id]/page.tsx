@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/app/components/ui/botton';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Mock data for a single poll
 const mockPoll = {
@@ -112,10 +112,10 @@ export default function PollDetailPage({ params }: { params: { id: string } }) {
             </div>
           )}
         </CardContent>
-        <CardFooter className="text-sm text-slate-500 flex justify-between">
+        <div className="text-sm text-slate-500 flex justify-between">
           <span>Created by {poll.createdBy}</span>
           <span>Created on {new Date(poll.createdAt).toLocaleDateString()}</span>
-        </CardFooter>
+        </div>
       </Card>
 
       <div className="pt-4">
