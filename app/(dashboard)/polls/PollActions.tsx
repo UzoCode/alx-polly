@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAuth } from "@/app/lib/context/auth-context";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/botton";
 import { deletePoll } from "@/app/lib/actions/poll-actions";
 
 interface Poll {
