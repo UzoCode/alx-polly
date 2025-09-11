@@ -160,7 +160,7 @@ export async function submitVote(pollIdRaw: string, optionIndexRaw: number) {
   // Attempt upsert (update if exists, insert otherwise). This requires DB unique constraint.
   const { error } = await supabase
     .from("votes")
-    .upsert(payload, { onConflict: ["poll_id", "user_id"] })
+    .upsert([payload], { onConflict: "poll_id, user_id" })
     .select();
 
   if (error) {
