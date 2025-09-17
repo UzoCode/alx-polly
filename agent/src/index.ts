@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import { argv } from 'process';
-import { getStagedDiff, getBranchDiff } from './utils/git.js';
-import { generateCommitMessage } from './tools/generateCommitMessage.js';
-import { generateReviewSummary } from './tools/generateReviewSummary.ts';
-import { writeMarkdownReview } from './tools/writeMarkdown.js';
+import { getStagedDiff, getBranchDiff } from './utils/git';
+import { generateCommitMessage } from './tools/generateCommitMessage';
+import { generateReviewSummary } from './tools/generateReviewSummary';
+import { writeMarkdownReview } from './tools/writeMarkdown';
 
 type Mode = 'staged' | 'branch';
 
